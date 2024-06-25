@@ -42,4 +42,10 @@ public interface IServeService extends IService<Serve> {
      */
     Serve update(Long id, BigDecimal price);
 
+
+    /**
+     * 上架区域服务
+     * @param id    服务id
+     */
+    Serve onSale(Long id);
 }

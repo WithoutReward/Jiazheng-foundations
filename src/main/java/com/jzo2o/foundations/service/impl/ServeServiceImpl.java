@@ -102,4 +102,37 @@ public class ServeServiceImpl extends ServiceImpl<ServeMapper, Serve> implements
         Serve serve = baseMapper.selectById(id);
         return serve;
     }
+
+    /**
+     * 上架区域服务
+     * @param id    服务id
+     * @return
+     */
+    @Override
+    public Serve onSale(Long id) {
+        //根据id查询serve信息
+        Serve serve = baseMapper.selectById(id);
+        if(ObjectUtil.isNull(serve))
+            throw new ForbiddenOperationException("区域服务信息不存在");
+        //如果serve的sale_status是0或1可以上架
+        Integer saleStatus = serve.getSaleStatus();
+        if(saleStatus==FoundationStatusEnum.DISABLE.getStatus() || saleStatus==FoundationStatusEnum.INIT.getStatus()){
+            //如果服务项没有启用不能上架
+            Long serveItemId = serve.getServeItemId();
+            ServeItem serveItem = serveItemMapper.selectById(serveItemId);
+            if(serveItem.getActiveStatus()!=FoundationStatusEnum.ENABLE.getStatus())
+                throw new ForbiddenOperationException("服务项状态未启用，不能上架");
+            //更新sale_status的状态
+            boolean update = lambdaUpdate()
+                    .eq(Serve::getId, id)
+                    .set(Serve::getSaleStatus, FoundationStatusEnum.ENABLE.getStatus())
+                    .update();
+            if(!update)
+                throw new CommonException("服务上架失败");
+        }else {
+            throw new ForbiddenOperationException("区域服务状态为草稿或下架时方可上架");
+        }
+        return baseMapper.selectById(id);
+
+    }
 }

@@ -52,7 +52,11 @@ public class ServeController {
     }
 
 
-
+    /**
+     * 修改区域服务价格
+     * @param id
+     * @param price
+     */
     @PutMapping("/{id}")
     @ApiOperation("修改区域服务价格")
     @ApiImplicitParams({
@@ -63,4 +67,13 @@ public class ServeController {
         serveService.update(id,price);
     }
 
+
+    @PutMapping("/onSale/{id}")
+    @ApiOperation("区域服务上架")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "服务id", required = true, dataTypeClass = Long.class),
+    })
+    public void onSale(@PathVariable Long id){
+        serveService.onSale(id);
+    }
 }
