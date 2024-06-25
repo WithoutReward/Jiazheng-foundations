@@ -2,6 +2,7 @@ package com.jzo2o.foundations.service.impl;
 
 
 import cn.hutool.core.util.ObjectUtil;
+import com.jzo2o.common.expcetions.CommonException;
 import com.jzo2o.common.expcetions.ForbiddenOperationException;
 import com.jzo2o.common.model.PageResult;
 import com.jzo2o.common.utils.BeanUtils;
@@ -21,6 +22,7 @@ import com.jzo2o.mysql.utils.PageHelperUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -81,5 +83,23 @@ public class ServeServiceImpl extends ServiceImpl<ServeMapper, Serve> implements
             baseMapper.insert(serve);
 
         }
+    }
+
+    /**
+     * 服务价格修改
+     * @param id    服务id
+     * @param price 价格
+     * @return
+     */
+    @Override
+    public Serve update(Long id, BigDecimal price) {
+        boolean update = lambdaUpdate()
+                .eq(Serve::getId, id)
+                .set(Serve::getPrice, price)
+                .update();
+        if(!update)
+            throw new CommonException("修改服务价格失败");
+        Serve serve = baseMapper.selectById(id);
+        return serve;
     }
 }
