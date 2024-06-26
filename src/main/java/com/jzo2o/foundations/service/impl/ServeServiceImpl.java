@@ -42,6 +42,10 @@ public class ServeServiceImpl extends ServiceImpl<ServeMapper, Serve> implements
     @Resource
     private RegionMapper regionMapper;
 
+    final private Integer Is_Hot = 1;
+
+    final private Integer Is_Not_Hot = 0;
+
 
     /**
      * 区域服务分页查询
@@ -134,5 +138,103 @@ public class ServeServiceImpl extends ServiceImpl<ServeMapper, Serve> implements
         }
         return baseMapper.selectById(id);
 
+    }
+
+
+    /**
+     * 根据id删除区域服务
+     * @param id
+     */
+    @Override
+    public void deleteById(Long id) {
+        //根据id查询serve信息
+        Serve serve = baseMapper.selectById(id);
+        if(ObjectUtil.isNull(serve))
+            throw new ForbiddenOperationException("区域服务信息不存在");
+        //如果serve的sale_status是0可以删除
+        Integer saleStatus = serve.getSaleStatus();
+        if(saleStatus!=FoundationStatusEnum.INIT.getStatus())
+            throw new ForbiddenOperationException("当前服务状态不为草稿");
+        //删除区域服务
+        int res = baseMapper.deleteById(id);
+        if(res==0)
+            throw new CommonException("区域服务删除失败");
+    }
+
+
+    /**
+     * 服务下架
+     * @param id
+     * @return
+     */
+    @Override
+    public Serve offSale(Long id) {
+        //根据id查询serve信息
+        Serve serve = baseMapper.selectById(id);
+        if(ObjectUtil.isNull(serve))
+            throw new ForbiddenOperationException("区域服务信息不存在");
+        //如果serve的sale_status是2可以下架
+        Integer saleStatus = serve.getSaleStatus();
+        if(saleStatus == FoundationStatusEnum.ENABLE.getStatus()){
+            //更新sale_status的状态
+            boolean update = lambdaUpdate()
+                    .eq(Serve::getId, id)
+                    .set(Serve::getSaleStatus, FoundationStatusEnum.DISABLE.getStatus())
+                    .update();
+            if(!update)
+                throw new CommonException("服务下架失败");
+        }else {
+            throw new ForbiddenOperationException("区域服务状态为上架时方可下架");
+        }
+        return baseMapper.selectById(id);
+    }
+
+
+    /**
+     * 设置热门
+     * @param id
+     * @return
+     */
+    @Override
+    public Serve onHot(Long id) {
+        Serve serve = baseMapper.selectById(id);
+        if(ObjectUtil.isNull(serve))
+            throw new ForbiddenOperationException("区域服务信息不存在");
+        Integer isHot = serve.getIsHot();
+        if(isHot == 1)
+            throw new ForbiddenOperationException("当前服务已经是热门");
+        else {
+            boolean update = lambdaUpdate()
+                    .eq(Serve::getId, id)
+                    .set(Serve::getIsHot, Is_Hot)
+                    .update();
+            if(!update)
+                throw new CommonException("服务设置热门失败");
+        }
+        return baseMapper.selectById(id);
+    }
+
+    /**
+     * 取消热门
+     * @param id
+     * @return
+     */
+    @Override
+    public Serve offHot(Long id) {
+        Serve serve = baseMapper.selectById(id);
+        if(ObjectUtil.isNull(serve))
+            throw new ForbiddenOperationException("区域服务信息不存在");
+        Integer isHot = serve.getIsHot();
+        if(isHot == 0)
+            throw new ForbiddenOperationException("当前服务已经是非热门");
+        else {
+            boolean update = lambdaUpdate()
+                    .eq(Serve::getId, id)
+                    .set(Serve::getIsHot, Is_Not_Hot)
+                    .update();
+            if(!update)
+                throw new CommonException("服务取消热门失败");
+        }
+        return baseMapper.selectById(id);
     }
 }

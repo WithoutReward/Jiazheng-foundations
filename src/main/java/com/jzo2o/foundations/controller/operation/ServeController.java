@@ -67,7 +67,10 @@ public class ServeController {
         serveService.update(id,price);
     }
 
-
+    /**
+     * 区域服务上架
+     * @param id
+     */
     @PutMapping("/onSale/{id}")
     @ApiOperation("区域服务上架")
     @ApiImplicitParams({
@@ -76,4 +79,57 @@ public class ServeController {
     public void onSale(@PathVariable Long id){
         serveService.onSale(id);
     }
+
+    /**
+     * 删除区域服务
+     * @param id
+     */
+    @DeleteMapping("/{id}")
+    @ApiOperation("删除区域服务")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "服务id", required = true, dataTypeClass = Long.class),
+    })
+    public void delete(@PathVariable Long id){
+        serveService.deleteById(id);
+    }
+
+
+    /**
+     * 服务下架
+     * @param id
+     */
+    @PutMapping("/offSale/{id}")
+    @ApiOperation("服务下架")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "服务id", required = true, dataTypeClass = Long.class),
+    })
+    public void offSale(@PathVariable Long id){
+        serveService.offSale(id);
+    }
+
+    /**
+     * 设置热门
+     * @param id
+     */
+    @PutMapping("/onHot/{id}")
+    @ApiOperation("设置热门")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "服务id", required = true, dataTypeClass = Long.class),
+    })
+    public void onHot(@PathVariable Long id){
+        serveService.onHot(id);
+    }
+
+
+    @PutMapping("/offHot/{id}")
+    @ApiOperation("取消热门")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "服务id", required = true, dataTypeClass = Long.class),
+    })
+    public void offHot(@PathVariable Long id){
+        serveService.offHot(id);
+    }
+
+
+
 }
