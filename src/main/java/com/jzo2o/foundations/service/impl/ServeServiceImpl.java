@@ -42,6 +42,9 @@ public class ServeServiceImpl extends ServiceImpl<ServeMapper, Serve> implements
     @Resource
     private RegionMapper regionMapper;
 
+    @Resource
+    private ServeMapper serveMapper;
+
     final private Integer Is_Hot = 1;
 
     final private Integer Is_Not_Hot = 0;
@@ -236,5 +239,22 @@ public class ServeServiceImpl extends ServiceImpl<ServeMapper, Serve> implements
                 throw new CommonException("服务取消热门失败");
         }
         return baseMapper.selectById(id);
+    }
+
+    /**
+     * 统计上架服务数量
+     * @param id
+     * @param status
+     * @return
+     */
+    @Override
+    public int queryServeCountByRegionIdAndSaleStatus(Long id, int status) {
+        int count = 0;
+        List<ServeResDTO> serveResDTOS = serveMapper.queryServeListByRegionId(id);
+        for (ServeResDTO serveResDTO : serveResDTOS) {
+            if(serveResDTO.getSaleStatus() == status)
+                count++;
+        }
+        return count;
     }
 }

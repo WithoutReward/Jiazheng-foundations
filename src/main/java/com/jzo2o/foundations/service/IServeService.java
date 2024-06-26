@@ -76,4 +76,12 @@ public interface IServeService extends IService<Serve> {
      * @return
      */
     Serve offHot(Long id);
+
+    /**
+     * 统计上架服务数量
+     * @param id
+     * @param status
+     * @return
+     */
+    int queryServeCountByRegionIdAndSaleStatus(Long id, int status);
 }
