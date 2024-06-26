@@ -49,8 +49,6 @@ public class RegionServiceImpl extends ServiceImpl<RegionMapper, Region> impleme
     @Resource
     private CityDirectoryMapper cityDirectoryMapper;
     @Resource
-    private ServeMapper serveMapper;
-    @Resource
     private IServeService serveService;
 
 
